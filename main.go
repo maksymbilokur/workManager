@@ -21,7 +21,8 @@ func main() {
 	initBaseMap()
 	cSalary := calculateSalaryForUser("Princess Jailyn Weissnat", activity, time.Time{}, time.Time{})
 	fmt.Println(cSalary)
-	for k, v := range workingHoursForProjects(activity) {
+	workingHoursAndUsersForProjects(activity)
+	for k, v := range project {
 		fmt.Println(k, v)
 	}
 }
@@ -31,7 +32,6 @@ func calculateSalaryForUser(user string, activities []entity.ActivityData, _ tim
 	var salary float32
 	for _, a := range activities {
 		if a.User == user /*&& a.Billable != "No"*/ {
-			//const
 			if a.Duration <= RegularHours {
 				salary += salaryList[a.Project].Salary * a.Duration
 			} else {
@@ -42,33 +42,46 @@ func calculateSalaryForUser(user string, activities []entity.ActivityData, _ tim
 	return salary
 }
 
-func workingHoursForProjects(activities []entity.ActivityData) map[string]entity.ProjectMetric {
+func calculateSalaryForUserInProject(user, project string, activities []entity.ActivityData, _ time.Time, _ time.Time) float32 {
+	var salary float32
+	for _, a := range activities {
+		if a.User == user && a.Project == project /*&& a.Billable != "No"*/ {
+			if a.Duration <= RegularHours {
+				salary += salaryList[a.Project].Salary * a.Duration
+			} else {
+				salary += salaryList[a.Project].Salary*8 + salaryList[a.Project].OvertimeSalary*(a.Duration-8)
+			}
+		}
+	}
+	return salary
+}
+
+func workingHoursAndUsersForProjects(activities []entity.ActivityData) {
 
 	project = make(map[string]entity.ProjectMetric)
 	for _, a := range activities {
-
 		if _, ok := project[a.Project]; ok {
-			project[a.Project] = entity.ProjectMetric{
-				WorkingHours: project[a.Project].WorkingHours + a.Duration,
-			}
+			countOfUser := 0
+			teamMembers := project[a.Project].TeamMembers
 			for _, member := range project[a.Project].TeamMembers {
 				if member == a.User {
-					goto UserLoop
+					countOfUser++
 				}
 			}
-			project[a.Project] = entity.ProjectMetric{
-				TeamMembers: append(project[a.Project].TeamMembers, a.User),
+			if countOfUser == 0 {
+				teamMembers = append(teamMembers, a.User)
 			}
-		UserLoop:
-			continue
-		}
-
-		project[a.Project] = entity.ProjectMetric{
-			WorkingHours: a.Duration,
-			TeamMembers:  append([]string{}, a.User),
+			project[a.Project] = entity.ProjectMetric{
+				WorkingHours: project[a.Project].WorkingHours + a.Duration,
+				TeamMembers:  teamMembers,
+			}
+		} else {
+			project[a.Project] = entity.ProjectMetric{
+				WorkingHours: a.Duration,
+				TeamMembers:  append([]string{}, a.User),
+			}
 		}
 	}
-	return project
 }
 
 //temporary method
