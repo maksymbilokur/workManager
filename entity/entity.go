@@ -63,18 +63,6 @@ type TeamMemberMetric struct {
 	TotalWorkingHours float32
 }
 
-func StringToDataV2(high string, low string) time.Time {
-	sepHigh := strings.Split(high, "/")
-	sepLow := strings.Split(low, ":")
-	year, _ := strconv.Atoi(sepHigh[2])
-	monthint, _ := strconv.Atoi(sepHigh[1])
-	month := time.Month(monthint)
-	day, _ := strconv.Atoi(sepHigh[0])
-	hour, _ := strconv.Atoi(sepLow[0])
-	min, _ := strconv.Atoi(sepLow[1])
-	sec, _ := strconv.Atoi(sepLow[2])
-	return time.Date(year, month, day, hour, min, sec, 0, time.UTC)
-}
 func StringToData(str string) time.Time {
 	layout := "1/_2/2006 15:04:05"
 	if t, err := time.Parse(layout, str); err == nil {
@@ -84,6 +72,7 @@ func StringToData(str string) time.Time {
 }
 
 func StringToDuration(d string) float32 {
+	//TODO time.ParseDuration
 	sepd := strings.Split(d, ":")
 	hour, _ := strconv.Atoi(sepd[0])
 	min, _ := strconv.Atoi(sepd[1])

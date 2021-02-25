@@ -19,12 +19,20 @@ func main() {
 		activity = append(activity, entity.InputToActivity(l))
 	}
 	initBaseMap()
-	cSalary := calculateSalaryForUser("Princess Jailyn Weissnat", activity, time.Time{}, time.Time{})
-	fmt.Println(cSalary)
-	workingHoursAndUsersForProjects(activity)
-	for k, v := range project {
-		fmt.Println(k, v)
-	}
+
+	/*
+		cSalary := calculateSalaryForUser("Princess Jailyn Weissnat", activity, time.Time{}, time.Time{})
+		fmt.Println("in all project salary:",cSalary)
+		oneProjectSalary := calculateSalaryForUserInProject("Princess Jailyn Weissnat","hic culpa", activity, time.Time{}, time.Time{})
+		fmt.Println("in one project salary:",oneProjectSalary)
+		workingHoursAndUsersForProjects(activity)
+		for k, v := range project {
+			fmt.Println(k, v)
+		}
+	*/
+
+	memberStats := SalaryHoursForMember("Princess Jailyn Weissnat", activity, time.Time{}, time.Time{})
+	fmt.Println("stats for member:", memberStats)
 }
 
 //prepare for input date range
@@ -35,7 +43,7 @@ func calculateSalaryForUser(user string, activities []entity.ActivityData, _ tim
 			if a.Duration <= RegularHours {
 				salary += salaryList[a.Project].Salary * a.Duration
 			} else {
-				salary += salaryList[a.Project].Salary*8 + salaryList[a.Project].OvertimeSalary*(a.Duration-8)
+				salary += salaryList[a.Project].Salary*RegularHours + salaryList[a.Project].OvertimeSalary*(a.Duration-RegularHours)
 			}
 		}
 	}
@@ -49,7 +57,7 @@ func calculateSalaryForUserInProject(user, project string, activities []entity.A
 			if a.Duration <= RegularHours {
 				salary += salaryList[a.Project].Salary * a.Duration
 			} else {
-				salary += salaryList[a.Project].Salary*8 + salaryList[a.Project].OvertimeSalary*(a.Duration-8)
+				salary += salaryList[a.Project].Salary*RegularHours + salaryList[a.Project].OvertimeSalary*(a.Duration-RegularHours)
 			}
 		}
 	}
@@ -84,6 +92,24 @@ func workingHoursAndUsersForProjects(activities []entity.ActivityData) {
 	}
 }
 
+func SalaryHoursForMember(user string, activities []entity.ActivityData, _ time.Time, _ time.Time) entity.TeamMemberMetric {
+	//salary, total working hours
+	total := entity.TeamMemberMetric{}
+
+	for _, a := range activities {
+		if a.User == user /*&& a.Billable != "No"*/ {
+			if a.Duration <= RegularHours {
+				total.Salary += salaryList[a.Project].Salary * a.Duration
+			} else {
+				total.Salary += salaryList[a.Project].Salary*RegularHours + salaryList[a.Project].OvertimeSalary*(a.Duration-RegularHours)
+			}
+			fmt.Println(total.TotalWorkingHours, a.Duration)
+			total.TotalWorkingHours += a.Duration
+		}
+	}
+	return total
+}
+
 //temporary method
 func initBaseMap() {
 	salaryList = make(map[string]entity.ProjectSalary)
@@ -106,6 +132,10 @@ func initBaseMap() {
 		},
 		{
 			name:   "mollitia minus",
+			salary: entity.ProjectSalary{Salary: 1.0, OvertimeSalary: 2.0},
+		},
+		{
+			name:   "hic culpa",
 			salary: entity.ProjectSalary{Salary: 1.0, OvertimeSalary: 2.0},
 		},
 	}

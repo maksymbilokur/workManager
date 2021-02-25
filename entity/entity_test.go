@@ -35,7 +35,7 @@ func Test_stringToDuration(t *testing.T) {
 			result: resultTime,
 		},
 	}
-	//01 month
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			te, err := time.Parse("1/_2/2006 15:04:05", tt.args)
