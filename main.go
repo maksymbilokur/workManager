@@ -7,8 +7,11 @@ import (
 	"time"
 )
 
-var salaryList map[string]entity.ProjectSalary
-var project map[string]entity.ProjectMetric
+var (
+	salaryList map[string]entity.ProjectSalary
+	project    map[string]entity.ProjectMetric
+	member     map[string]entity.TeamMemberMetric
+)
 
 const RegularHours = 8.0
 
@@ -29,10 +32,14 @@ func main() {
 		for k, v := range project {
 			fmt.Println(k, v)
 		}
+		memberStats := SalaryHoursForMember("Princess Jailyn Weissnat", activity, time.Time{}, time.Time{})
+		fmt.Println("stats for member:", memberStats)
 	*/
+	SalaryHoursForAllMembers(activity, time.Time{}, time.Time{})
+	for k, v := range member {
+		fmt.Println(k, v)
+	}
 
-	memberStats := SalaryHoursForMember("Princess Jailyn Weissnat", activity, time.Time{}, time.Time{})
-	fmt.Println("stats for member:", memberStats)
 }
 
 //prepare for input date range
@@ -103,11 +110,19 @@ func SalaryHoursForMember(user string, activities []entity.ActivityData, _ time.
 			} else {
 				total.Salary += salaryList[a.Project].Salary*RegularHours + salaryList[a.Project].OvertimeSalary*(a.Duration-RegularHours)
 			}
-			fmt.Println(total.TotalWorkingHours, a.Duration)
 			total.TotalWorkingHours += a.Duration
 		}
 	}
 	return total
+}
+
+func SalaryHoursForAllMembers(activities []entity.ActivityData, t1 time.Time, t2 time.Time) {
+	member = make(map[string]entity.TeamMemberMetric)
+	for _, a := range activities {
+		if _, ok := member[a.User]; !ok {
+			member[a.User] = SalaryHoursForMember(a.User, activities, t1, t2)
+		}
+	}
 }
 
 //temporary method
