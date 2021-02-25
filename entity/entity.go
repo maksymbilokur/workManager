@@ -76,21 +76,8 @@ func StringToDataV2(high string, low string) time.Time {
 	return time.Date(year, month, day, hour, min, sec, 0, time.UTC)
 }
 func StringToData(str string) time.Time {
-	layout1 := "01/02/2006 15:04:05"
-	layout2 := "01/2/2006 15:04:05"
-	layout3 := "1/02/2006 15:04:05"
-	layout4 := "1/2/2006 15:04:05"
-
-	if t, err := time.Parse(layout1, str); err == nil {
-		return t
-	}
-	if t, err := time.Parse(layout2, str); err == nil {
-		return t
-	}
-	if t, err := time.Parse(layout3, str); err == nil {
-		return t
-	}
-	if t, err := time.Parse(layout4, str); err == nil {
+	layout := "1/_2/2006 15:04:05"
+	if t, err := time.Parse(layout, str); err == nil {
 		return t
 	}
 	return time.Time{}
