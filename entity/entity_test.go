@@ -1,9 +1,10 @@
 package entity
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_stringToDuration(t *testing.T) {

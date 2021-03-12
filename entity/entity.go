@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -47,7 +47,6 @@ type ActivityData struct {
 	Duration float32
 }
 
-//timeparce
 type ProjectSalary struct {
 	Salary         float32
 	OvertimeSalary float32
@@ -72,13 +71,15 @@ func StringToData(str string) time.Time {
 }
 
 func StringToDuration(d string) float32 {
-	//TODO time.ParseDuration
-	sepd := strings.Split(d, ":")
-	hour, _ := strconv.Atoi(sepd[0])
-	min, _ := strconv.Atoi(sepd[1])
-	sec, _ := strconv.Atoi(sepd[2])
+	sep := strings.Split(d, ":")
+	hour := sep[0] + "h" + sep[1] + "m" + sep[2] + "s"
+	res, err := time.ParseDuration(hour)
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
 
-	return float32(hour) + float32(min)/60 + float32(sec)/3600
+	return float32(res.Hours())
 }
 func InputToActivity(data InputData) ActivityData {
 	return ActivityData{
