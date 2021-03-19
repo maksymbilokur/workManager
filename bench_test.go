@@ -1,7 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/workmanager/calculator"
 	"github.com/workmanager/entity"
@@ -18,6 +22,7 @@ func BenchmarkRearerWithmetric(b *testing.B) {
 	}
 }
 
+/*
 func BenchmarkReader(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
@@ -31,4 +36,15 @@ func BenchmarkReader(b *testing.B) {
 		calculator.WorkingHoursAndUsersForProjects(activities)
 		calculator.SalaryHoursForAllMembers(activities)
 	}
+}
+
+*/
+func Test1(t *testing.T) {
+	msg := []entity.ProjectSalary{
+		{Salary: 1, OvertimeSalary: 2},
+		{Salary: 2, OvertimeSalary: 3},
+	}
+	b, err := json.MarshalIndent(msg, "", "  ")
+	require.Nil(t, err)
+	fmt.Println(string(b))
 }

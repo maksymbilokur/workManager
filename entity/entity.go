@@ -62,12 +62,21 @@ type TeamMemberMetric struct {
 	TotalWorkingHours float32
 }
 
-func StringToData(str string) time.Time {
+func StringToTime(str string) time.Time {
 	layout := "1/_2/2006 15:04:05"
 	if t, err := time.Parse(layout, str); err == nil {
 		return t
 	}
 	return time.Time{}
+}
+
+func StringToDate(str string) (time.Time, error) {
+	layout := "_2:1:2006"
+	t, err := time.Parse(layout, str)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return t, nil
 }
 
 func StringToDuration(d string) float32 {
@@ -87,8 +96,8 @@ func InputToActivity(data InputData) ActivityData {
 		Project:  data.Project,
 		Task:     data.Task,
 		Billable: data.Billable,
-		Start:    StringToData(strings.Join([]string{data.StartDate, data.StartTime}, " ")),
-		End:      StringToData(strings.Join([]string{data.EndDate, data.EndTime}, " ")),
+		Start:    StringToTime(strings.Join([]string{data.StartDate, data.StartTime}, " ")),
+		End:      StringToTime(strings.Join([]string{data.EndDate, data.EndTime}, " ")),
 		Duration: StringToDuration(data.Duration),
 	}
 }
